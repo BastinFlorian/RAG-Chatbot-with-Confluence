@@ -19,3 +19,4 @@ CONFLUENCE_SPACE_KEY = os.environ['CONFLUENCE_SPACE_KEY']
 CONFLUENCE_USERNAME = os.environ['EMAIL_ADRESS']
 PATH_NAME_SPLITTER = './splitted_docs.jsonl'
 PERSIST_DIRECTORY = './db/chroma/'
+EVALUATION_DATASET = '../data/evaluation_dataset.tsv'
