@@ -67,11 +67,11 @@ class HelpDesk():
         )
         return qa
 
-    def retrieval_qa_inference(self, question):
+    def retrieval_qa_inference(self, question, verbose=True):
         query = {"query": question}
         answer = self.retrieval_qa_chain(query)
         sources = self.list_top_k_sources(answer, k=2)
-        print(sources)
+        if verbose:print(sources)
 
         return answer["result"], sources
 

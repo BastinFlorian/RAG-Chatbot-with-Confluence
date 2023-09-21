@@ -32,6 +32,13 @@ cd src
 streamlit run streamlit.py
 ```
 
+- To evaluate the quality of the RAG model:
+```
+# First replace the evaluation dataset in the data folder with your topic questions
+cd src
+python evaluate.py
+```
+
 - To use and deep dive with the notebook
 ```
 ipython kernel install --name RAG --user  # Add the notebook kernel
