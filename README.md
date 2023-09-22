@@ -34,7 +34,7 @@ streamlit run streamlit.py
 
 - To evaluate the quality of the RAG model:
 ```
-# First replace the evaluation dataset in the data folder with your topic questions
+# First replace the evaluation dataset file in the data folder with your topic questions
 cd src
 python evaluate.py
 ```
