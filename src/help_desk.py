@@ -1,35 +1,32 @@
 import sys
 import load_db
 import collections
-
-# Build prompt
-# Prompt template
+from langchain.llms import OpenAI
+from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-
-sys.path.append('../')
-from config import PERSIST_DIRECTORY
+from langchain.embeddings import OpenAIEmbeddings
 
 
 class HelpDesk():
     """Create the necessary objects to create a QARetrieval chain"""
     def __init__(self, new_db=True):
-        self.template = self._get_template()
-        self.persist_directory = PERSIST_DIRECTORY
 
-        self.embeddings = self._get_embeddings()
+        self.new_db = new_db
+        self.template = self.get_template()
+        self.embeddings = self.get_embeddings()
+        self.llm = self.get_llm()
+        self.prompt = self.get_prompt()
 
-        if new_db:
+        if self.new_db:
             self.db = load_db.DataLoader().set_db(self.embeddings)
         else:
             self.db = load_db.DataLoader().get_db(self.embeddings)
 
         self.retriever = self.db.as_retriever()
-        self.prompt = self._load_prompt(self.template)
+        self.retrieval_qa_chain = self.get_retrieval_qa()
 
-        self.llm = self._get_llm()
-        self.retrieval_qa_chain = self._load_retrieval_qa()
 
-    def _get_template(self):
+    def get_template(self):
         template = """
         Given this text extracts:
         -----
@@ -41,22 +38,22 @@ class HelpDesk():
         """
         return template
 
-    def _load_prompt(self, template):
-        prompt = PromptTemplate(template=template, input_variables=["context", "question"])
+    def get_prompt(self) -> PromptTemplate:
+        prompt = PromptTemplate(
+            template=self.template,
+            input_variables=["context", "question"]
+        )
         return prompt
 
-    def _get_embeddings(self):
-        from langchain.embeddings import OpenAIEmbeddings
+    def get_embeddings(self) -> OpenAIEmbeddings:
         embeddings = OpenAIEmbeddings()
         return embeddings
 
-    def _get_llm(self):
-        from langchain.llms import OpenAI
+    def get_llm(self):
         llm = OpenAI()
         return llm
 
-    def _load_retrieval_qa(self):
-        from langchain.chains import RetrievalQA
+    def get_retrieval_qa(self):
         chain_type_kwargs = {"prompt": self.prompt}
         qa = RetrievalQA.from_chain_type(
             llm=self.llm,
@@ -71,20 +68,28 @@ class HelpDesk():
         query = {"query": question}
         answer = self.retrieval_qa_chain(query)
         sources = self.list_top_k_sources(answer, k=2)
-        if verbose:print(sources)
+
+        if verbose:
+            print(sources)
 
         return answer["result"], sources
 
     def list_top_k_sources(self, answer, k=2):
-        # Display sources as [title_of_source](source_url)
-        sources = [f'[{res.metadata["title"]}]({res.metadata["source"]})' for res in answer["source_documents"]]
+        sources = [
+            f'[{res.metadata["title"]}]({res.metadata["source"]})'
+            for res in answer["source_documents"]
+        ]
+
         if sources:
             k = min(k, len(sources))
             distinct_sources = list(zip(*collections.Counter(sources).most_common()))[0][:k]
             distinct_sources_str = "  \n- ".join(distinct_sources)
+
         if len(distinct_sources) == 1:
             return f"Voici la source qui pourrait t'être utile :  \n- {distinct_sources_str}"
+
         elif len(distinct_sources) > 1:
             return f"Voici {len(distinct_sources)} sources qui pourraient t'être utiles :  \n- {distinct_sources_str}"
+
         else:
             return "Désolé je n'ai trouvé aucune ressource pour répondre à ta question"

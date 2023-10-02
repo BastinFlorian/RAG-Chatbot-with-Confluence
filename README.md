@@ -3,10 +3,10 @@
 **Help desk** allows you to create a Question Answering bot with a streamlit UI using your company Confluence data.
 
 <p align="center">
-  <img src="./images/help_desk.gif" alt="animated" />
+  <img src="./docs/help_desk.gif" alt="animated" />
 </p>
 
-# Prerequisites
+# How to use
 
 - Create a virtual environnement:
     - `python3.10 -m venv .venv`
@@ -46,6 +46,30 @@ jupyter lab
 ```
 
 ## How it works ?
+
+
+    .
+    ├── data/
+        ├── evaluation_dataset.tsv  # Questions and answers useful for evaluation
+
+    ├── docs/                       # Documentation files
+    ├── src/                        # The main directory for computer demo
+        ├── __init__.py
+        ├── load_db.py              # Load data from confluence and creates smart chunks
+        ├── help_desk.py            # Instantiates the LLMs, retriever and chain
+        ├── main.py                 # Run the Chatbot for a simple question
+        ├── streamlit.py            # Run the Chatbot in streamlit where you can ask your own questions
+        ├── evaluate.py             # Evaluate the RAG model based on questions-answers samples
+
+    ├── notebooks/                  # Interactive code, useful for try and learn
+    ├── config.py
+    ├── .env.template               # Environment variables to feed
+    ├── .gitignore
+    ├── LICENSE                     # MIT License
+    ├── README.md                   # Where to start
+    └── requirements.txt            # The dependencies
+
+
 The process is the following:
 - Loading data from Confluence
   - You can keep the Markdown style using the `keep_markdown_format` option added in our [MR]('https://github.com/langchain-ai/langchain/pull/8246')
@@ -53,7 +77,6 @@ The process is the following:
   - Otherwise you cannot split text in a smart manner using the [MarkdownHeaderTextSplitter]('https://python.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/markdown_header_metadata')
 - Load data
 - Markdown and RecursiveCharacterTextSplitter
-- Open AI LLM et embedding
-- QARetrievalChain
-- Streamlit for visualizing data
-
+- LLM used: Open AI LLM and embedding
+- The QARetrievalChain
+- Streamlit as a data interface

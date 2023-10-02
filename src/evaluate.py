@@ -70,5 +70,6 @@ if __name__ == '__main__':
     model = HelpDesk(new_db=True)
     dataset = open_evaluation_dataset(EVALUATION_DATASET)
     evaluate_dataset(model, dataset)
+
     print('Mean Levenshtein distance: ', dataset['Levenshtein_Distance'].mean())
     print('Mean Cosine distance: ', dataset['Cosine_Distance'].mean())

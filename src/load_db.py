@@ -6,6 +6,10 @@ sys.path.append('../')
 from config import (CONFLUENCE_SPACE_NAME, CONFLUENCE_SPACE_KEY,
                     CONFLUENCE_USERNAME, CONFLUENCE_API_KEY, PERSIST_DIRECTORY)
 
+from langchain.document_loaders import ConfluenceLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import MarkdownHeaderTextSplitter
+
 class DataLoader():
     """Create, load, save the DB using the confluence Loader"""
     def __init__(
@@ -25,7 +29,6 @@ class DataLoader():
 
     def load_from_confluence_loader(self):
         """Load HTML files from Confluence"""
-        from langchain.document_loaders import ConfluenceLoader
         loader = ConfluenceLoader(
             url=self.confluence_url,
             username=self.username,
@@ -39,9 +42,6 @@ class DataLoader():
         return docs
 
     def split_docs(self, docs):
-        from langchain.text_splitter import RecursiveCharacterTextSplitter
-        from langchain.text_splitter import MarkdownHeaderTextSplitter
-
         # Markdown
         headers_to_split_on = [
             ("#", "Titre 1"),
